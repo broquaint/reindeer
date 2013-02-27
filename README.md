@@ -15,6 +15,7 @@ TODO
 # TODO
 
 * attributes
+  * type constraints
 * roles
 * method modifiers
 * metaclasses

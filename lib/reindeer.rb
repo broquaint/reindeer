@@ -6,12 +6,11 @@ class Reindeer
     def has(name, opts={})
       self.class_eval do
         @@meta.add_attribute(name, opts)
-        attr_reader name
       end
     end
   end
 
-  # Um, I guess?
+  # XXX This needs to happen per calling/composing class. BOO.
   @@meta = Reindeer::Meta.new(self)  
   def meta; @@meta; end
 
