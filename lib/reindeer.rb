@@ -16,9 +16,18 @@ class Reindeer
   end
 
   def initialize(args={})
+    # Move this to RM::Attribute?
     for attr in meta.get_attributes
-      next unless args.has_key? attr.name
-      instance_variable_set "@#{attr.name}", args[attr.name]
+      name = attr.name
+      if attr.required? and not args.has_key? name
+        raise Meta::Attribute::AttributeError,
+        "Did not specify required argument '#{name}'"
+      end
+      if args.has_key?(name)
+        instance_variable_set "@#{name}", args[name]
+      elsif attr.has_default?
+        instance_variable_set "@#{name}", attr.get_default_value
+      end
     end
   end
 end

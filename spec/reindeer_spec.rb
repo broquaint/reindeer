@@ -48,7 +48,7 @@ describe 'Reindeer' do
       class FirstFail < Reindeer
         has :epic, is: 'fail'
       end
-    }.to raise_error(Reindeer::Meta::Attribute::UnknownIsOption)
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
 
   it 'should have a meta per subclass' do
@@ -56,5 +56,36 @@ describe 'Reindeer' do
     class FifthOne  < Reindeer; end
     expect(FourthOne.new.meta == FifthOne.new.meta).to be_false
     expect(FourthOne.new.meta).to eql(FourthOne.meta)
+  end
+
+  it 'should have required attributes' do
+    class SixthOne < Reindeer
+      has :foo, required: true
+    end
+    expect(SixthOne.new(foo: 'yep').foo).to eq('yep')
+    expect {
+      SixthOne.new
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
+
+  it 'should have default attribute values' do
+    class SeventhOne < Reindeer
+      # clone, clone, execute
+      has :ichi, default: 'one'
+      has :ni,   default: %w[two three]
+      has :san,  default: -> { [:four, :five] }
+    end
+
+    expect(SeventhOne.new.ichi).to eq('one')
+
+    a = SeventhOne.new.ni
+    expect(a).to eq(%w{two three})
+    a << 'four five'
+    expect(SeventhOne.new.ni).to eq(%w{two three})
+
+    b = SeventhOne.new.san
+    expect(b).to eq([:four, :five])
+    b << :six
+    expect(SeventhOne.new.san).to eq([:four, :five])
   end
 end
