@@ -38,7 +38,7 @@ describe 'Reindeer' do
     expect(obj.respond_to? :quux).to be_true
     expect(obj.respond_to? :quux=).to be_true
     expect(obj.respond_to? :xuuq).to be_false
-    expect(obj.meta.has_attribute(:xuuq)).to be_true
+    expect(obj.meta.has_attribute?(:xuuq)).to be_true
     expect(obj.baz).to eq('Sawasdee!')
     expect(obj.quux).to be_nil
     obj.quux = 'super'
