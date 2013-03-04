@@ -103,21 +103,41 @@ describe 'Reindeer' do
     expect(EighthOne.new.ha).to eq('mmm, lazy')
     expect(EighthOne.new.hok).to eq('not eager')
 
-    obj = EighthOne.new
+    expect {
+      class SecondFail < Reindeer
+        has :blam, lazy: true, builder: :flub, default: 'blub'
+      end
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+    expect {
+      class ThirdFail < Reindeer
+        has :blam, lazy: true
+      end
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
 
-    expect(obj.has_ha).to  be_false
-    expect(obj.has_hok).to be_false
+  it 'should support the lazy_build shorthand' do
+    class NinthOne < Reindeer
+      has :jet, lazy_build: true
+      private
+      def build_jet
+        :symbolic
+      end
+    end
 
-    expect(obj.ha).to  eq('mmm, lazy')
-    expect(obj.hok).to eq('not eager')
+    expect(NinthOne.new.jet).to eq(:symbolic)
 
-    expect(obj.has_ha).to  be_true
-    expect(obj.has_hok).to be_true
+    obj = NinthOne.new
 
-    obj.clear_ha
-    obj.clear_hok
+    expect(obj.has_jet).to be_false
+    expect(obj.jet).to eq(:symbolic)
+    expect(obj.has_jet).to be_true
+    obj.clear_jet
+    expect(obj.has_jet).to be_false
 
-    expect(obj.has_ha).to  be_false
-    expect(obj.has_hok).to be_false
+    expect {
+      class FourthFail < Reindeer
+        has :nope, lazy_build: true, default: -> { 'boom!' }
+      end
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
 end

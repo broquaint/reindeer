@@ -18,7 +18,7 @@ class Reindeer
       attr = Reindeer::Meta::Attribute.new(name, opts)
       # XXX Should really do this at this once everything has been
       # defined not up front like this. Don't know of any hooks though :(
-      attr.install_accessors_in(klass)
+      attr.install_methods_in(klass)
       get_attributes << attr
     end
 
