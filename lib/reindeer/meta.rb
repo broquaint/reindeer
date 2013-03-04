@@ -33,7 +33,7 @@ class Reindeer
         obj.instance_eval do
           if args.has_key?(name)
             instance_variable_set "@#{name}", args[name]
-          elsif attr.has_default?
+          elsif attr.has_default? and not attr.is_lazy?
             instance_variable_set "@#{name}", attr.get_default_value
           end
         end

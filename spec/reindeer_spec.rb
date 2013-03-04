@@ -88,4 +88,36 @@ describe 'Reindeer' do
     b << :six
     expect(SeventhOne.new.san).to eq([:four, :five])
   end
+
+  it 'should have lazily built attribute values' do
+    class EighthOne < Reindeer
+      private
+      def build_ha
+        'mmm, lazy'
+      end
+      public
+      has :ha,  lazy: true, builder: :build_ha
+      has :hok, lazy: true, default: -> { 'not eager' }
+    end
+
+    expect(EighthOne.new.ha).to eq('mmm, lazy')
+    expect(EighthOne.new.hok).to eq('not eager')
+
+    obj = EighthOne.new
+
+    expect(obj.has_ha).to  be_false
+    expect(obj.has_hok).to be_false
+
+    expect(obj.ha).to  eq('mmm, lazy')
+    expect(obj.hok).to eq('not eager')
+
+    expect(obj.has_ha).to  be_true
+    expect(obj.has_hok).to be_true
+
+    obj.clear_ha
+    obj.clear_hok
+
+    expect(obj.has_ha).to  be_false
+    expect(obj.has_hok).to be_false
+  end
 end
