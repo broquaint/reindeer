@@ -156,4 +156,22 @@ describe 'Reindeer' do
       end
     }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
+
+  it 'should have simple type constraints' do
+    class EleventhOne < Reindeer
+      has :gau, is_a: ::String
+      has :sip, is_a: ::Fixnum
+    end
+
+    obj = EleventhOne.new(gau: 'foo', sip: 123)
+    expect(obj.gau).to eq('foo')
+    expect(obj.sip).to eq(123)
+
+    expect {
+      EleventhOne.new(gau: [])
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+    expect {
+      EleventhOne.new(sip: {})
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
 end

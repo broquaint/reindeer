@@ -8,6 +8,8 @@ class Reindeer
 
       attr_reader :is_ro, :is_rw, :is_bare
 
+      attr_reader :is_a
+
       attr_reader :default_value
       attr_reader :lazy_builder, :lazy_build
 
@@ -105,6 +107,8 @@ class Reindeer
         process_is opts[:is]
         process_default opts[:default] if opts.has_key?(:default)
         @required = opts[:required]
+        @is_a = opts[:is_a] if opts.has_key?(:is_a)
+        
         process_lazy opts[:lazy], opts if opts.has_key?(:lazy)
 
         if opts[:lazy_build]

@@ -27,11 +27,15 @@ class Reindeer
         name = attr.name
         if attr.required? and not args.has_key? name
           raise Meta::Attribute::AttributeError,
-          "Did not specify required argument '#{name}'"
+                "Did not specify required argument '#{name}'"
         end
 
         obj.instance_eval do
           if args.has_key?(name)
+            if attr.is_a and not args[name].is_a? attr.is_a
+              raise Meta::Attribute::AttributeError,
+                    "The value for '#{name}' isa '#{args[name].class}' not '#{attr.is_a.class}'"
+            end
             instance_variable_set "@#{name}", args[name]
           elsif attr.has_default? and not attr.is_lazy?
             instance_variable_set "@#{name}", attr.get_default_value
