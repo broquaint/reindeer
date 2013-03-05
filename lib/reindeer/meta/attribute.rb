@@ -11,6 +11,8 @@ class Reindeer
       attr_reader :default_value
       attr_reader :lazy_builder, :lazy_build
 
+      attr_reader :handles
+
       def initialize(name, opts)
         @name = name
         process_opts opts
@@ -26,6 +28,7 @@ class Reindeer
           install_clearer_in   klass
           install_predicate_in klass
         end
+        install_delegators klass if has_handles?
       end
 
       def install_accessors_in(klass)
@@ -68,6 +71,15 @@ class Reindeer
         }
       end
 
+      def install_delegators(klass)
+        attr_name = to_var
+        handles.each do |method|
+          klass.__send__ :define_method, method, Proc.new {|*args|
+            instance_variable_get(attr_name).__send__(method, *args)
+          }
+        end
+      end
+
       def get_default_value
         default_value.call
       end
@@ -76,11 +88,15 @@ class Reindeer
       def required?
         @required
       end
+      # There must be a cleaner way to get a boolean.
       def has_default?
         not default_value.nil?
       end
       def is_lazy?
         not @lazy_builder.nil?
+      end
+      def has_handles?
+        not handles.nil?
       end
 
       private
@@ -96,6 +112,8 @@ class Reindeer
           @lazy_builder = "build_#{name}".to_sym
           @lazy_build   = true
         end
+
+        process_handles opts[:handles] if opts.has_key?(:handles)
       end
 
       def process_is(val)
@@ -125,6 +143,11 @@ class Reindeer
         end
 
         @lazy_builder = opts[:builder] || opts[:default]
+      end
+
+      def process_handles(handles)
+        raise AttributeError, "Only support an Array of methods is supported for handles" unless handles.is_a?(Array)
+        @handles = handles
       end
     end
   end

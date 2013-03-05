@@ -140,4 +140,20 @@ describe 'Reindeer' do
       end
     }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
+
+  it 'should support delegation with handles' do
+    class TenthOne < Reindeer
+      has :bat, is: :bare, handles: [:sub]
+    end
+
+    obj = TenthOne.new(bat: 'zoo')
+    expect(obj.sub /z/, 'f').to eq('foo')
+    expect(obj.respond_to?(:bat)).to be_false
+
+    expect {
+      class FifthFail < Reindeer
+        has :bleh, handles: Object.new
+      end
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
 end
