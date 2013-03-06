@@ -7,6 +7,7 @@ class Reindeer
 
     def initialize(klass)
       @klass = klass # Hrm, circular? Not a problem with constants?
+      # TODO Use a hash
       @attributes = []
     end
 
@@ -32,13 +33,11 @@ class Reindeer
 
         obj.instance_eval do
           if args.has_key?(name)
-            if attr.is_a and not args[name].is_a? attr.is_a
-              raise Meta::Attribute::AttributeError,
-                    "The value for '#{name}' isa '#{args[name].class}' not '#{attr.is_a.class}'"
-            end
-            instance_variable_set "@#{name}", args[name]
+            attr.set_value_for self, args[name]
+            #instance_variable_set "@#{name}", args[name]
           elsif attr.has_default? and not attr.is_lazy?
-            instance_variable_set "@#{name}", attr.get_default_value
+            attr.set_value_for self, attr.get_default_value
+            #instance_variable_set "@#{name}", attr.get_default_value
           end
         end
       end
@@ -46,6 +45,11 @@ class Reindeer
     
     def has_attribute?(name)
       get_attributes.any? {|a| a.name == name }
+    end
+
+    def get_attribute(sym)
+      sym = sym.sub(/^@/, '').to_sym if sym.is_a?(String)
+      get_attributes.select{|a| a.name == sym}.first
     end
   end
 end

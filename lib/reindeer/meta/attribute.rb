@@ -39,23 +39,26 @@ class Reindeer
         if is_lazy?
           attr_name = to_var
           builder   = lazy_builder
-          # TODO Have the attr_* replace the builder once attribute value is set.
           klass.__send__ :define_method, name, Proc.new {
             if instance_variable_defined? attr_name
               instance_variable_get attr_name
             else
-              instance_variable_set attr_name,
+              meta.get_attribute(attr_name).set_value_for(
+                self, 
                 builder.is_a?(Symbol) ? __send__(builder) : builder.call()
+              )
             end
           }
         else
           meth = if is_ro
                    :attr_reader
                  elsif is_rw
-                   :attr_accessor
+                   :attr_reader
                  end
-          name_sym = name.to_sym # Identity!
+          name_sym = name
           klass.class_eval { self.__send__ meth, name_sym }
+          if is_rw
+          end
         end
       end
 
@@ -80,6 +83,14 @@ class Reindeer
             instance_variable_get(attr_name).__send__(method, *args)
           }
         end
+      end
+
+      def set_value_for(instance, value)
+        if is_a and not value.is_a? is_a
+          raise Meta::Attribute::AttributeError,
+               "The value for '#{name}' of type '#{value.class}' is not a '#{is_a}'"
+        end
+        instance.instance_variable_set to_var, value
       end
 
       def get_default_value
