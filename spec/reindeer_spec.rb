@@ -174,4 +174,31 @@ describe 'Reindeer' do
       EleventhOne.new(sip: {})
     }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
+
+  it 'should should consistently apply type constraints' do
+    class TwelvethOne < Reindeer
+      has :une,  is_a: ::Array, lazy_build: true
+      has :deux, is_a: ::Hash,  is: :rw
+      private
+      def build_une
+        %w{cool beans}
+      end
+    end
+
+    obj = TwelvethOne.new
+    expect(obj.une).to eq(%w{cool beans})
+    obj.deux = { hashie: 'hash' }
+    expect(obj.deux).to eq({ hashie: 'hash' })
+
+    expect {
+      TwelvethOne.new.deux = []
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+
+    expect {
+      class SixthFail < Reindeer
+        has :saywaht, is_a: Regexp, lazy: true, default: 'this here'
+      end
+      SixthFail.new.saywaht
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
 end

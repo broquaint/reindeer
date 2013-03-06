@@ -50,14 +50,12 @@ class Reindeer
             end
           }
         else
-          meth = if is_ro
-                   :attr_reader
-                 elsif is_rw
-                   :attr_reader
-                 end
           name_sym = name
-          klass.class_eval { self.__send__ meth, name_sym }
+          klass.class_eval { self.__send__ :attr_reader, name_sym }
           if is_rw
+            klass.__send__ :define_method, "#{name}=", Proc.new {|v|
+              meta.get_attribute(name_sym).set_value_for(self, v)
+            }
           end
         end
       end
@@ -116,10 +114,11 @@ class Reindeer
 
       def process_opts(opts)
         process_is opts[:is]
-        process_default opts[:default] if opts.has_key?(:default)
-        @required = opts[:required]
-        @is_a = opts[:is_a] if opts.has_key?(:is_a)
         
+        @required      = opts[:required]
+        @is_a          = opts[:is_a] if opts.has_key?(:is_a)
+        @default_value = process_default opts[:default] if opts.has_key?(:default)
+
         process_lazy opts[:lazy], opts if opts.has_key?(:lazy)
 
         if opts[:lazy_build]
@@ -143,11 +142,11 @@ class Reindeer
 
       # TODO check default is callable.
       def process_default(default)
-        @default_value = if default.is_a?(Proc)
-                           default
-                         else
-                           Proc.new { default.clone }
-                         end
+        if default.is_a?(Proc)
+          default
+        else
+          Proc.new { default.clone }
+        end
       end
 
       def process_lazy(is_lazy, opts)
@@ -157,7 +156,7 @@ class Reindeer
           raise AttributeError, "Must specify lazy or builder for lazy"
         end
 
-        @lazy_builder = opts[:builder] || opts[:default]
+        @lazy_builder = opts[:builder] || process_default(opts[:default])
       end
 
       def process_handles(handles)
