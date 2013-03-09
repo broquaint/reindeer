@@ -206,11 +206,14 @@ describe 'Reindeer' do
     module FirstRole
       include Reindeer::Role
       has :trois, default: 'cool'
-      requires :quartre
+      requires :quatre
+      def cinq
+        %w{cool beans}
+      end
     end
     class ThirteenthOne < Reindeer
       with FirstRole
-      def quartre
+      def quatre
         'beans'
       end
       meta.compose!
@@ -218,7 +221,8 @@ describe 'Reindeer' do
 
     obj = ThirteenthOne.new
     expect(obj.trois).to eq('cool')
-    expect(obj.quartre).to eq('beans')
+    expect(obj.quatre).to eq('beans')
+    expect(obj.cinq).to eq(%w{cool beans})
 
     expect {
       module BankRole

@@ -18,7 +18,7 @@ class Reindeer
       @roles.each do |role|
         role.assert_requires klass
         # role.compose_methods! klass
-        klass.extend role # Blech
+        klass.__send__ :include, role # Blech
         role.role_meta.get_attributes.each do |attr|
           attr.install_methods_in klass
         end
