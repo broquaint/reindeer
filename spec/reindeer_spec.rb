@@ -201,4 +201,34 @@ describe 'Reindeer' do
       SixthFail.new.saywaht
     }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
+
+  it 'should compose a role' do
+    module FirstRole
+      include Reindeer::Role
+      has :trois, default: 'cool'
+      requires :quartre
+    end
+    class ThirteenthOne < Reindeer
+      with FirstRole
+      def quartre
+        'beans'
+      end
+      meta.compose!
+    end
+
+    obj = ThirteenthOne.new
+    expect(obj.trois).to eq('cool')
+    expect(obj.quartre).to eq('beans')
+
+    expect {
+      module BankRole
+        include Reindeer::Role
+        requires :money
+      end
+      class SeventhFail < Reindeer
+        with BankRole
+        meta.compose!
+      end
+    }.to raise_error(Reindeer::Role::RoleError)
+  end
 end

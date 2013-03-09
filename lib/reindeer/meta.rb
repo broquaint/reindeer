@@ -4,11 +4,36 @@ class Reindeer
   class Meta
 
     attr_reader :klass
+    attr_reader :required_methods
 
     def initialize(klass)
       @klass = klass # Hrm, circular? Not a problem with constants?
       # TODO Use a hash
       @attributes = []
+      @roles      = []
+      @required_methods = []
+    end
+
+    def compose!
+      @roles.each do |role|
+        role.assert_requires klass
+        # role.compose_methods! klass
+        klass.extend role # Blech
+        role.role_meta.get_attributes.each do |attr|
+          attr.install_methods_in klass
+        end
+
+        get_attributes.push(*role.role_meta.get_attributes)
+      end
+    end
+
+    def add_role(role)
+      @roles << role
+    end
+
+    # Not sure if this is the best place for it.
+    def add_required_method(method)
+      @required_methods << method
     end
 
     def get_attributes
@@ -17,10 +42,8 @@ class Reindeer
 
     def add_attribute(name, opts)
       attr = Reindeer::Meta::Attribute.new(name, opts)
-      # XXX Should really do this at this once everything has been
-      # defined not up front like this. Don't know of any hooks though :(
-      attr.install_methods_in(klass)
       get_attributes << attr
+      return attr
     end
 
     def setup_attributes(obj, args)
@@ -34,10 +57,8 @@ class Reindeer
         obj.instance_eval do
           if args.has_key?(name)
             attr.set_value_for self, args[name]
-            #instance_variable_set "@#{name}", args[name]
           elsif attr.has_default? and not attr.is_lazy?
             attr.set_value_for self, attr.get_default_value
-            #instance_variable_set "@#{name}", attr.get_default_value
           end
         end
       end
