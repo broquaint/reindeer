@@ -235,4 +235,28 @@ describe 'Reindeer' do
       end
     }.to raise_error(Reindeer::Role::RoleError)
   end
+
+  it 'should compose multiple roles' do
+    module SecondRole
+      include Reindeer::Role
+      has :foo
+      def bar; 'two'; end
+    end
+    module ThirdRole
+      include Reindeer::Role
+      has :baz
+      def quux; 'four'; end
+    end
+    class FourteenthOne < Reindeer
+      with SecondRole
+      with ThirdRole
+      meta.compose!
+    end
+    
+    obj = FourteenthOne.new(foo: 'one', baz: 'three')
+    expect(obj.foo).to eq('one')
+    expect(obj.bar).to eq('two')
+    expect(obj.baz).to eq('three')
+    expect(obj.quux).to eq('four')
+  end
 end
