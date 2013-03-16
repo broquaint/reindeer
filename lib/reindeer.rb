@@ -11,6 +11,10 @@ class Reindeer
     end
     
     def inherited(subclass)
+      provide_meta subclass
+    end
+
+    def provide_meta(subclass)
       meta = Reindeer::Meta.new(subclass)
       meth = Proc.new { meta }
       klass = class << subclass; self; end
@@ -25,5 +29,8 @@ class Reindeer
 
   def initialize(args={})
     meta.setup_attributes(self, args)
+    meta.build_all(self, args)
   end
+
+  def build(args); end
 end

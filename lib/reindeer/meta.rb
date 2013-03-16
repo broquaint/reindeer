@@ -14,6 +14,18 @@ class Reindeer
       @required_methods = []
     end
 
+    def build_all(obj, args)
+      to_build = obj.class.ancestors.take_while { |klass|
+        klass != Reindeer
+      }.reverse
+
+      (to_build - obj.class.included_modules).each { |klass|
+        # TODO assume build is private.
+        build = klass.instance_method(:build)
+        build.bind(obj).call(args)
+      }
+    end
+
     def compose!
       @roles.each do |role|
         role.assert_requires klass
