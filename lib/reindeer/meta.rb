@@ -52,6 +52,13 @@ class Reindeer
       @attributes
     end
 
+    def get_all_attributes
+      all_classes = klass.ancestors.take_while{|k| k!=Reindeer}.select{|c|
+        c.class == Class
+      }.reverse
+      all_classes.collect{|c| c.meta.get_attributes}.flatten
+    end
+
     def add_attribute(name, opts)
       attr = Reindeer::Meta::Attribute.new(name, opts)
       get_attributes << attr
@@ -59,7 +66,7 @@ class Reindeer
     end
 
     def setup_attributes(obj, args)
-      for attr in get_attributes
+      for attr in get_all_attributes
         name = attr.name
         if attr.required? and not args.has_key? name
           raise Meta::Attribute::AttributeError,

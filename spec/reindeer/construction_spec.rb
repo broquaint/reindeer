@@ -3,7 +3,7 @@ include RSpec::Expectations
 
 require 'reindeer'
 
-describe 'Reindeer' do
+describe 'Reindeer construction' do
   it 'should call all build methods' do
     class FifteenthOne < Reindeer
       def build(args)
