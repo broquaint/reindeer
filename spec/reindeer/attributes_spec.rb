@@ -47,7 +47,17 @@ describe 'Reindeer attributes' do
       end
     }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
-  
+
+  it 'should have required attributes' do
+    class SixthOne < Reindeer
+      has :foo, required: true
+    end
+    expect(SixthOne.new(foo: 'yep').foo).to eq('yep')
+    expect {
+      SixthOne.new
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
+
   it 'should have default attribute values' do
     class SeventhOne < Reindeer
       # clone, clone, execute
