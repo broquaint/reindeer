@@ -1,5 +1,6 @@
 require 'reindeer/meta'
 require 'reindeer/role'
+require 'reindeer/role/typeconstraint'
 
 class Reindeer
   class << self

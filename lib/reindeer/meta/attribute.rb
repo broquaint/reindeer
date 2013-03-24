@@ -8,7 +8,7 @@ class Reindeer
 
       attr_reader :is_ro, :is_rw, :is_bare
 
-      attr_reader :is_a
+      attr_reader :is_a, :type_of
 
       attr_reader :default_value
       attr_reader :lazy_builder, :lazy_build
@@ -88,6 +88,7 @@ class Reindeer
           raise Meta::Attribute::AttributeError,
                "The value for '#{name}' of type '#{value.class}' is not a '#{is_a}'"
         end
+        type_of.check_constraint(value) if type_of
         instance.instance_variable_set to_var, value
       end
 
@@ -117,6 +118,7 @@ class Reindeer
         
         @required      = opts[:required]
         @is_a          = opts[:is_a] if opts.has_key?(:is_a)
+        @type_of       = process_type_of opts[:type_of] if opts.has_key?(:type_of)
         @default_value = process_default opts[:default] if opts.has_key?(:default)
 
         process_lazy opts[:lazy], opts if opts.has_key?(:lazy)
@@ -137,6 +139,17 @@ class Reindeer
         when :rw then @is_rw = true
         when :bare then @is_bare = true
         else raise AttributeError, "Unknown value for is '#{val}'"
+        end
+      end
+
+      def process_type_of(type_constraint)
+        tc = type_constraint.new # XXX Bleh!
+        if tc.respond_to? :verify # TODO Implement .does?
+          tc
+        elsif type_constraint.class == Class # or something
+          Reindeer::TypeConstraint::Class.new(isa)
+        else
+          raise AttributeError, "Unknown type constraint '#{isa}' for #{name}"
         end
       end
 
