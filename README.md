@@ -12,11 +12,21 @@ TODO - Need a gemspec
 
 See spec/ for now.
 
-# TODO
+# Features
+
+These features are supported to a greater or less extent:
 
 * attributes
+  * accessors
+  * defaults
+  * laziness
   * type constraints
   * delegators
+  * default
 * roles
+* build_all
+
+# TODO
+
 * method modifiers
 * metaclasses?
