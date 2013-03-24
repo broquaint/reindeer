@@ -1,6 +1,3 @@
-require 'rspec'
-include RSpec::Expectations
-
 require 'reindeer'
 
 describe 'Reindeer construction' do
