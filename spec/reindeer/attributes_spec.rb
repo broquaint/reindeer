@@ -118,11 +118,11 @@ describe 'Reindeer attributes' do
 
     obj = NinthOne.new
 
-    expect(obj.has_jet).to be_false
+    expect(obj.has_jet?).to be_false
     expect(obj.jet).to eq(:symbolic)
-    expect(obj.has_jet).to be_true
-    obj.clear_jet
-    expect(obj.has_jet).to be_false
+    expect(obj.has_jet?).to be_true
+    obj.clear_jet!
+    expect(obj.has_jet?).to be_false
 
     expect {
       class FourthFail < Reindeer
@@ -149,8 +149,8 @@ describe 'Reindeer attributes' do
 
   it 'should have simple type constraints' do
     class EleventhOne < Reindeer
-      has :gau, is_a: ::String
-      has :sip, is_a: ::Fixnum
+      has :gau, is_a: String
+      has :sip, is_a: Fixnum
     end
 
     obj = EleventhOne.new(gau: 'foo', sip: 123)
@@ -167,8 +167,8 @@ describe 'Reindeer attributes' do
 
   it 'should should consistently apply type constraints' do
     class TwelvethOne < Reindeer
-      has :une,  is_a: ::Array, lazy_build: true
-      has :deux, is_a: ::Hash,  is: :rw
+      has :une,  is_a: Array, lazy_build: true
+      has :deux, is_a: Hash,  is: :rw
       private
       def build_une
         %w{cool beans}

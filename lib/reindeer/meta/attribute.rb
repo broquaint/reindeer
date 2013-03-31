@@ -62,14 +62,14 @@ class Reindeer
 
       def install_clearer_in(klass)
         attr_name = to_var
-        klass.__send__ :define_method, "clear_#{name}", Proc.new {
+        klass.__send__ :define_method, "clear_#{name}!", Proc.new {
           remove_instance_variable attr_name
         }
       end
       
       def install_predicate_in(klass)
         attr_name = to_var
-        klass.__send__ :define_method, "has_#{name}", Proc.new {
+        klass.__send__ :define_method, "has_#{name}?", Proc.new {
           instance_variable_defined? attr_name
         }
       end
