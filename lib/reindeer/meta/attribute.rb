@@ -129,6 +129,7 @@ class Reindeer
           @lazy_build   = true
         end
 
+        raise AttributeError, "Can't be lazy and required, pick one!" if required? and is_lazy?
         process_handles opts[:handles] if opts.has_key?(:handles)
       end
 

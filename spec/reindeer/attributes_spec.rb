@@ -211,4 +211,12 @@ describe 'Reindeer attributes' do
     expect(obj.bar).to eq(2)
     expect(obj.baz).to eq(3)
   end
+
+  it 'should raise an exception for lazy required attributes' do
+    expect {
+      class LazyRequiredFail < Reindeer
+        has :zoiks, lazy: true, required: true
+      end
+    }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
+  end
 end
