@@ -11,6 +11,14 @@ class Reindeer
       meta.add_attribute(name, opts).install_methods_in(self)
     end
     
+    def with(role)
+      meta.add_role(role)
+    end
+
+    def does?(role)
+      meta.all_roles.include? role
+    end
+
     def inherited(subclass)
       provide_meta subclass
     end
@@ -22,10 +30,6 @@ class Reindeer
       klass.__send__    :define_method, :meta, meth
       subclass.__send__ :define_method, :meta, meth
     end
-    
-    def with(role)
-      meta.add_role(role)
-    end
   end
 
   def initialize(args={})
@@ -34,4 +38,8 @@ class Reindeer
   end
 
   def build(args); end
+
+  def does?(role)
+    meta.all_roles.include? role
+  end
 end

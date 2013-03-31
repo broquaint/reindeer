@@ -59,4 +59,21 @@ describe 'Reindeer roles' do
     expect(obj.baz).to eq('three')
     expect(obj.quux).to eq('four')
   end
+
+  it 'should know if an object does a role' do
+    module DoesRole
+      include Reindeer::Role
+    end
+    class ThatDoesARole < Reindeer
+      with DoesRole
+      meta.compose!
+    end
+    class ThatDoesNoRole < Reindeer; end
+
+    expect(ThatDoesARole.does? DoesRole).to be_true
+    expect(ThatDoesARole.new.does? DoesRole).to be_true
+
+    expect(ThatDoesNoRole.does? DoesRole).to be_false
+    expect(ThatDoesNoRole.new.does? DoesRole).to be_false
+  end
 end

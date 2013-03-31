@@ -27,7 +27,7 @@ class Reindeer
     end
 
     def compose!
-      @roles.each do |role|
+      all_roles.each do |role|
         role.assert_requires klass
         # role.compose_methods! klass
         klass.__send__ :include, role # Blech
@@ -41,6 +41,10 @@ class Reindeer
 
     def add_role(role)
       @roles << role
+    end
+
+    def all_roles
+      @roles
     end
 
     # Not sure if this is the best place for it.

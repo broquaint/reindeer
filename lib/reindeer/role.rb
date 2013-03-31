@@ -28,10 +28,5 @@ class Reindeer
         end
       }
     end
-    
-    private
-    def initialise
-      super() # Blech
-    end
   end
 end
