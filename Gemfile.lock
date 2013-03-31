@@ -16,5 +16,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  rake
-  rspec
+  rake (~> 10)
+  rspec (~> 2)

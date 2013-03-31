@@ -1,7 +1,8 @@
 source "http://rubygems.org"
 
-gem 'rake'
+ruby '1.9.3'
 
 group :test do
-  gem "rspec"
+  gem 'rake',  '~> 10'
+  gem 'rspec', '~> 2'
 end
