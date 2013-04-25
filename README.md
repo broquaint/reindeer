@@ -9,14 +9,16 @@ borrowed from [Moose](http://p3rl.org/Moose).
 
 # Usage
 
-    require 'reindeer'
-    class Point < Reindeer
-      has :x, is: :rw, is_a: Integer
-      has :y, is: :rw, is_a: Integer
-    end
-    class Point3D < Point
-      has :z, is: :rw, is_a: Integer
-    end
+```ruby
+require 'reindeer'
+class Point < Reindeer
+  has :x, is: :rw, is_a: Integer
+  has :y, is: :rw, is_a: Integer
+end
+class Point3D < Point
+  has :z, is: :rw, is_a: Integer
+end
+```
 
 # Features
 
@@ -111,21 +113,23 @@ To compose a role in a Reindeer class two expressions are required,
 latter brings in the role attributes and asserts the existence of any
 required methods e.g
 
-    module Breakable
-      include Reindeer::Role
-      has :is_broken, default: -> { false }
-      requires :fix!
-    end
-    
-    class Egg < Reindeer
-      with Breakable
-      
-      def fix!
-        throw :no_dice if is_broken
-      end
-      
-      meta.compose!
-    end
+```ruby
+module Breakable
+  include Reindeer::Role
+  has :is_broken, default: -> { false }
+  requires :fix!
+end
+
+class Egg < Reindeer
+  with Breakable
+  
+  def fix!
+    throw :no_dice if is_broken
+  end
+  
+  meta.compose!
+end
+```
 
 The `.does?` method can be used to inspect which roles have been
 consumed e.g `Egg.does?(Breakable) == true`.
@@ -140,29 +144,33 @@ Given that Ruby has a well established class system one need only
 assert an attribute is of a given (existing) class a Reindeer will go
 to the trouble of asserting that when the attribute value is set e.g
 
-    class AccountSqlTable < Reindeer
-      has :id,     is_a: Fixnum
-      has :owner,  is_a: String
-      has :amount, is_a: Float
-      # ...
-    end
+```ruby
+class AccountSqlTable < Reindeer
+  has :id,     is_a: Fixnum
+  has :owner,  is_a: String
+  has :amount, is_a: Float
+  # ...
+end
+```
 
 However if you need a specific type of class (e.g strings of a certain
 length) then a custom type constraint is needed. These can be defined
 simply by composing the `Reindeer::Role::TypeConstraint` and
 implementing a `verify` method e.g
 
-    class Varchar255 < Reindeer
-      with Reindeer::Role::TypeConstraint
-      def verify(v)
-        v.length <= 255
-      end
-      meta.compose!
-    end
+```ruby
+class Varchar255 < Reindeer
+  with Reindeer::Role::TypeConstraint
+  def verify(v)
+    v.length <= 255
+  end
+  meta.compose!
+end
 
-    class AccountSqlTable # continued from above
-      has :summary, type_of: Varchar255
-    end
+class AccountSqlTable # continued from above
+  has :summary, type_of: Varchar255
+end
+```
 
 *NB* The distinction between class and type constraints seems apt at this
 point but is by no means set in stone. Hopefully the passage of time
