@@ -219,4 +219,17 @@ describe 'Reindeer attributes' do
       end
     }.to raise_error(Reindeer::Meta::Attribute::AttributeError)
   end
+
+  it 'should find attributes up the inheritance chain' do
+    class NineteenthOne < Reindeer
+      has :foo, is: :rw
+      class Specialised < NineteenthOne
+        has :bar
+      end
+    end
+
+    obj = NineteenthOne::Specialised.new(bar: 'abc')
+    obj.foo = 123
+    expect(obj.foo).to eq(123)
+  end
 end

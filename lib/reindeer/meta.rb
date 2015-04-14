@@ -88,12 +88,12 @@ class Reindeer
     end
     
     def has_attribute?(name)
-      get_attributes.any? {|a| a.name == name }
+      get_all_attributes.any? {|a| a.name == name }
     end
 
     def get_attribute(sym)
       sym = sym.sub(/^@/, '').to_sym if sym.is_a?(String)
-      get_attributes.select{|a| a.name == sym}.first
+      get_all_attributes.select{|a| a.name == sym}.first
     end
   end
 end
